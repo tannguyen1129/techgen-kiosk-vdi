@@ -1,20 +1,26 @@
 #!/bin/bash
 
-# 1. Khởi động Code-Server (Chạy ngầm ở port 8080 nội bộ)
-# --bind-addr 127.0.0.1: Quan trọng! Để không ai từ ngoài truy cập được trừ Firefox nội bộ
+# 1. Khởi động Code-Server (SỬA LẠI DÒNG NÀY)
+# Thêm cờ '--auth none' để vào thẳng IDE không cần mật khẩu
 echo "[INIT] Starting Cloud IDE..."
-/usr/bin/entrypoint.sh --bind-addr 127.0.0.1:8080 /home/coder/project &
+su - coder -c "/usr/bin/code-server --bind-addr 127.0.0.1:8080 --auth none /home/coder/project" &
 
 # Đợi 5 giây cho IDE nạp xong
 sleep 5
 
-# 2. Bật Tường lửa (Chặn Internet, chỉ cho nộp bài)
+# 2. Bật Tường lửa
 echo "[INIT] Starting Firewall..."
 sudo /usr/bin/firewall.sh
 
-# 3. Bật XRDP (Cổng để VDI Gateway kết nối vào)
+# 3. Bật XRDP (Fix lỗi service không chạy)
 echo "[INIT] Starting VDI Interface..."
 rm -rf /var/run/xrdp/xrdp.pid
 rm -rf /var/run/xrdp/xrdp-sesman.pid
-sudo service xrdp-sesman start
-sudo /usr/sbin/xrdp -n
+
+# Chạy Sesman dưới nền
+/usr/sbin/xrdp-sesman &
+sleep 2
+
+# Chạy XRDP
+echo "[INIT] System Ready!"
+/usr/sbin/xrdp -n
