@@ -9,14 +9,12 @@ sleep 5
 echo "[INIT] Starting Firewall..."
 sudo /usr/bin/firewall.sh
 
-# 3. Bật VNC Server (QUAN TRỌNG: Thay thế XRDP)
+# 3. Bật VNC Server
 echo "[INIT] Starting VDI Interface (VNC)..."
 rm -rf /tmp/.X1-lock /tmp/.X11-unix/X1
 
-# Chạy TigerVNC tại Display :1 (Tương ứng Port 5901)
-# -SecurityTypes None: Không cần mật khẩu VNC (Vì Guacamole đã quản lý Auth rồi)
-su - coder -c "vncserver :1 -geometry 1920x1080 -depth 24 -SecurityTypes None"
+# [SỬA LẠI DÒNG NÀY] Thêm --I-KNOW-THIS-IS-INSECURE để TigerVNC chịu chạy
+su - coder -c "vncserver :1 -geometry 1920x1080 -depth 24 -SecurityTypes None -localhost no --I-KNOW-THIS-IS-INSECURE"
 
 echo "[INIT] System Ready!"
-# Giữ container luôn chạy
 tail -f /home/coder/.local/share/code-server/coder-logs/code-server-stdout.log
